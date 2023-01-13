@@ -33,7 +33,7 @@ const repositoriesMock: Repository[] = [
     id_repository: 2,
     id_tribe: 1,
     name: 'cd-common-text"',
-    state: 'A',
+    state: 'E',
     create_time: new Date(),
     status: 'A'
   }

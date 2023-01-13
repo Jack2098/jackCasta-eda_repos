@@ -6,32 +6,44 @@ import { verficationInformationService } from "./verificationInformation.service
 
 const mapperExtrucRepositoriesService = async (repositories: Repository[], metrics: Metric[]) => {
   const repositoryDto: RepositoryDto[] = []
-  await metrics.map(async(metric) => {
-    // const labelVerification = await verficationInformationService(metric.id_repository);
-    const repo = repositories.find(repository => repository.id_repository === metric.id_repository);
-    if (repo !== undefined) {
-      const tribe = tribeMock.find(tribeM => tribeM.id_tribe === repo.id_tribe)
-      if (tribe !== undefined) {
-        const organization = organizationMock.find(o => o.id_organization === tribe.id_organization);
-        if (organization !== undefined) {
-          repositoryDto.push({
-            id: metric.id_repository,
-            name: repo.name,
-            tribe: 'tribe.name',
-            organization: 'organization.name',
-            coverage: `${metric.coverage}%`,
-            codeSmells: metric.code_smells,
-            bugs: metric.bugs,
-            vulnerabilities: metric.vulnerabilities,
-            hotspot: metric.hotspot,
-            verificationState: '',
-            state: repo.state
-          })
-        }
-      }
-    }
-  });
+
+  for (const i in metrics) {
+    const labelVerification = await verficationInformationService(metrics[i].id_repository);
+    const reposi = repositories.filter(repo => repo.id_repository === metrics[i].id_repository)[0];
+    const tribe = tribeMock.filter(tribeM => tribeM.id_tribe === reposi.id_tribe)[0];
+    const organization = organizationMock.filter(o => o.id_organization === tribe.id_organization)[0];
+    repositoryDto.push({
+      id: metrics[i].id_repository,
+      name: reposi.name,
+      tribe: tribe.name,
+      organization: organization.name,
+      coverage: `${metrics[i].coverage}%`,
+      codeSmells: metrics[i].code_smells,
+      bugs: metrics[i].bugs,
+      vulnerabilities: metrics[i].vulnerabilities,
+      hotspot: metrics[i].hotspot,
+      verificationState: labelVerification,
+      state: getState(reposi.state)
+    });
+  }
+
   return repositoryDto;
+}
+
+const getState = (state: string) => {
+
+  let stateRepo = ''
+
+   switch(state) {
+    case 'E':
+      stateRepo = 'Habilitado'
+    case 'D':
+      stateRepo = 'Deshabilitado'
+    case 'A':
+      stateRepo = 'Archivado'
+  }
+
+  return stateRepo;
 }
 
 export {

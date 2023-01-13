@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import express, { Request, Response, Router } from 'express';
+import express from 'express';
 import cors from 'cors';
 import { route } from './routes/repository.route';
 
